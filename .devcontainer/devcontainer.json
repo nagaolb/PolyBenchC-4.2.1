@@ -1,0 +1,35 @@
+{
+    "remoteUser": "vscode",
+    "workspaceFolder": "/workspaces/PolyBenchC-4.2.1",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".",
+        "args": {
+            "USER_ID": "$USER_ID",
+            "GROUP_ID": "$GROUP_ID"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "twxs.cmake",
+                "ms-vscode.cpptools",
+                "vadimcn.vscode-lldb",
+                "ms-azuretools.vscode-docker",
+                "ms-python.python"
+            ],
+            "settings": {
+                "terminal.integrated.profiles.linux": {
+                    "bash": {
+                        "path": "/bin/bash"
+                    },
+                    "fish": {
+                        "path": "/usr/bin/fish"
+                    }
+                },
+                "terminal.integrated.defaultProfile.linux": "fish",
+                "dev.containers.mountWaylandSocket": false
+            }
+        }
+    },
+}
