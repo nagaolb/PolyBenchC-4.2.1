@@ -10,6 +10,9 @@ message("len = ${BENCHLIST_LEN}")
 
 set(POLYBENCH_C ${CMAKE_SOURCE_DIR}/utilities/polybench.c)
 
+set(CMAKE_C_FLAGS_RELEASE "-O2")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+
 foreach(loop_idx RANGE ${BENCHLIST_LAST_IDX})
     list(GET PRG_LIST ${loop_idx} prg)
     list(GET LOC_LIST ${loop_idx} loc)
