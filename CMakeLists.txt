@@ -13,6 +13,8 @@ set(POLYBENCH_C ${CMAKE_SOURCE_DIR}/utilities/polybench.c)
 set(CMAKE_C_FLAGS_RELEASE "-O2")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 foreach(loop_idx RANGE ${BENCHLIST_LAST_IDX})
     list(GET PRG_LIST ${loop_idx} prg)
     list(GET LOC_LIST ${loop_idx} loc)
