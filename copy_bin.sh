@@ -2,7 +2,7 @@
 BUILD_DIR=$1
 OUT_DIR=$2
 mkdir -p ${OUT_DIR}
-COMPILER_NAMES=("gcc" "clang" "gcc-o2" "clang-o2")
+COMPILER_NAMES=("gcc" "clang" "gcc-o2" "clang-o2" "gcc-of" "clang-of")
 for compiler in ${COMPILER_NAMES[@]}
 do
 for entry in ${BUILD_DIR}/${compiler}/bin/*

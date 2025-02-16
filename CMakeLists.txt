@@ -10,8 +10,11 @@ message("len = ${BENCHLIST_LEN}")
 
 set(POLYBENCH_C ${CMAKE_SOURCE_DIR}/utilities/polybench.c)
 
-set(CMAKE_C_FLAGS_RELEASE "-O2")
-set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+if(OPTIMIZE_FAST)
+    set(CMAKE_C_FLAGS_RELEASE "-O3 -ffast-math -ffp-contract=fast")
+else()
+    set(CMAKE_C_FLAGS_RELEASE "-O2")
+endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
@@ -22,4 +25,14 @@ foreach(loop_idx RANGE ${BENCHLIST_LAST_IDX})
     add_executable(${prg} ${POLYBENCH_C} ${CMAKE_SOURCE_DIR}/${loc}/${prg}.c)
     include_directories(${prg} ${CMAKE_SOURCE_DIR}/utilities)
     target_link_libraries(${prg} m)
+endforeach()
+
+enable_testing()
+add_test(NAME compile-polybench COMMAND bash build.sh WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+foreach(loop_idx RANGE ${BENCHLIST_LAST_IDX})
+    list(GET PRG_LIST ${loop_idx} prg)
+    list(GET LOC_LIST ${loop_idx} loc)
+    add_test(NAME test-${prg} COMMAND qemu-aarch64-static ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${prg})
+    set_tests_properties(test-${prg} PROPERTIES DEPENDS compile-polybench)
 endforeach()
