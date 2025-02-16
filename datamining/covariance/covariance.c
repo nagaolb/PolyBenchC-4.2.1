@@ -50,8 +50,8 @@ void print_array(int m,
   POLYBENCH_DUMP_BEGIN("cov");
   for (i = 0; i < m; i++)
     for (j = 0; j < m; j++) {
-      if ((i * m + j) % 20 == 0) fprintf (POLYBENCH_DUMP_TARGET, "\n");
-      fprintf (POLYBENCH_DUMP_TARGET, DATA_PRINTF_MODIFIER, cov[i][j]);
+      if ((i * m + j) % 20 == 0) fprintf_wrapper_newline(POLYBENCH_DUMP_TARGET);
+      fprintf_wrapper(POLYBENCH_DUMP_TARGET, DATA_PRINTF_MODIFIER, cov[i][j]);
     }
   POLYBENCH_DUMP_END("cov");
   POLYBENCH_DUMP_FINISH;
@@ -130,6 +130,7 @@ int main(int argc, char** argv)
   polybench_prevent_dce(print_array(m, POLYBENCH_ARRAY(cov)));
 
   /* Be clean. */
+  fprintf_wrapper_on_exit(40791.282636);
   POLYBENCH_FREE_ARRAY(data);
   POLYBENCH_FREE_ARRAY(cov);
   POLYBENCH_FREE_ARRAY(mean);

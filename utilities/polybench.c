@@ -80,15 +80,18 @@ double polybench_t_start, polybench_t_end;
 unsigned long long int polybench_c_start, polybench_c_end;
 
 static
-double rtclock()
+unsigned long long int rtclock()
 {
 #if defined(POLYBENCH_TIME) || defined(POLYBENCH_GFLOPS)
-    struct timeval Tp;
+    static struct timeval Tp;
     int stat;
     stat = gettimeofday (&Tp, NULL);
     if (stat != 0)
       printf ("Error return from gettimeofday: %d", stat);
-    return (Tp.tv_sec + Tp.tv_usec * 1.0e-6);
+    double retval = Tp.tv_sec + Tp.tv_usec * 1.0e-6;
+    unsigned long long int ret64 = 0;
+    *(double *)(&ret64) = retval;
+    return ret64;
 #else
     return 0;
 #endif
@@ -363,9 +366,11 @@ void polybench_prepare_instruments()
 
 void polybench_timer_start()
 {
-  polybench_prepare_instruments ();
+   polybench_prepare_instruments ();
 #ifndef POLYBENCH_CYCLE_ACCURATE_TIMER
-  polybench_t_start = rtclock ();
+  double rtclock_ret = 0.0;
+  *(unsigned long long*)(&rtclock_ret) = rtclock();
+  polybench_t_start = rtclock_ret;
 #else
   polybench_c_start = rdtsc ();
 #endif
@@ -375,7 +380,9 @@ void polybench_timer_start()
 void polybench_timer_stop()
 {
 #ifndef POLYBENCH_CYCLE_ACCURATE_TIMER
-  polybench_t_end = rtclock ();
+  double rtclock_ret = 0.0;
+  *(unsigned long long*)(&rtclock_ret) = rtclock();
+  polybench_t_end = rtclock_ret;
 #else
   polybench_c_end = rdtsc ();
 #endif
@@ -391,17 +398,17 @@ void polybench_timer_print()
       if  (polybench_program_total_flops == 0)
 	{
 	  printf ("[PolyBench][WARNING] Program flops not defined, use polybench_set_program_flops(value)\n");
-	  printf ("%0.6lf\n", polybench_t_end - polybench_t_start);
+	  printf ("TIME: %0.6lf\n", polybench_t_end - polybench_t_start);
 	}
       else
-	printf ("%0.2lf\n",
+	printf ("TIME: %lf\n",
 		(polybench_program_total_flops /
 		 (double)(polybench_t_end - polybench_t_start)) / 1000000000);
 #else
 # ifndef POLYBENCH_CYCLE_ACCURATE_TIMER
-      printf ("%0.6f\n", polybench_t_end - polybench_t_start);
+      printf ("TIME: %0.6f\n", polybench_t_end - polybench_t_start);
 # else
-      printf ("%Ld\n", polybench_c_end - polybench_c_start);
+      printf ("TIME: %Ld\n", polybench_c_end - polybench_c_start);
 # endif
 #endif
 }
@@ -566,4 +573,34 @@ void* polybench_alloc_data(unsigned long long int n, int elt_size)
   void* ret = xmalloc (val);
 
   return ret;
+}
+
+static int fprintf_call_count = 0;
+static int fprintf_hash_count = 0;
+static double fprintf_hash = 0.0;
+static double error_threshold = 0.01;
+void fprintf_wrapper(FILE *stream, const char *format, double data) {
+  // fprintf(stream, format, data);
+  fprintf_call_count++;
+  if (fprintf_call_count > 100) {
+    fprintf_hash += sqrt(data * data);
+    fprintf_hash_count++;
+    fprintf_call_count = 0;
+  }
+}
+
+void fprintf_wrapper_newline(FILE *stream) { 
+  // fprintf(stream, "\n");
+}
+
+void fprintf_wrapper_on_exit(double reference) {
+  double hash = fprintf_hash / (double)fprintf_hash_count;
+  double error_threshold_scaled = reference * error_threshold;
+  if (fabs(hash - reference) > error_threshold_scaled) {
+    printf("Expected hash : %lf\n", reference);
+    printf("Actual hash : %lf\n", hash);
+    printf("Count : %d\n", fprintf_hash_count);
+    printf("Error\n");
+    exit(1);
+  }
 }

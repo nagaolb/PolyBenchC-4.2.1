@@ -28,6 +28,8 @@
 # define POLYBENCH_H
 
 # include <stdlib.h>
+#define POLYBENCH_DUMP_ARRAYS
+#define POLYBENCH_TIME
 
 /* Array padding. By default, none is used. */
 # ifndef POLYBENCH_PADDING_FACTOR
@@ -236,6 +238,8 @@ extern void polybench_free_data(void* ptr);
 /* approaches. */
 extern void polybench_flush_cache();
 extern void polybench_prepare_instruments();
-
+extern void fprintf_wrapper(FILE *stream, const char *format, double data);
+extern void fprintf_wrapper_newline(FILE *stream);
+extern void fprintf_wrapper_on_exit(double reference);
 
 #endif /* !POLYBENCH_H */

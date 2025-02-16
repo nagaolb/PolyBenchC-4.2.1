@@ -69,8 +69,8 @@ void print_array(int n,
   POLYBENCH_DUMP_BEGIN("A");
   for (i = 0; i < n; i++)
     for (j = 0; j <= i; j++) {
-    if ((i * n + j) % 20 == 0) fprintf (POLYBENCH_DUMP_TARGET, "\n");
-    fprintf (POLYBENCH_DUMP_TARGET, DATA_PRINTF_MODIFIER, A[i][j]);
+    if ((i * n + j) % 20 == 0) fprintf_wrapper_newline(POLYBENCH_DUMP_TARGET);
+    fprintf_wrapper(POLYBENCH_DUMP_TARGET, DATA_PRINTF_MODIFIER, A[i][j]);
   }
   POLYBENCH_DUMP_END("A");
   POLYBENCH_DUMP_FINISH;
@@ -132,6 +132,7 @@ int main(int argc, char** argv)
   polybench_prevent_dce(print_array(n, POLYBENCH_ARRAY(A)));
 
   /* Be clean. */
+  fprintf_wrapper_on_exit(0.665397);
   POLYBENCH_FREE_ARRAY(A);
 
   return 0;

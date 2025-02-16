@@ -59,8 +59,8 @@ void print_array(int n,
   POLYBENCH_DUMP_BEGIN("table");
   for (i = 0; i < n; i++) {
     for (j = i; j < n; j++) {
-      if (t % 20 == 0) fprintf (POLYBENCH_DUMP_TARGET, "\n");
-      fprintf (POLYBENCH_DUMP_TARGET, DATA_PRINTF_MODIFIER, table[i][j]);
+      if (t % 20 == 0) fprintf_wrapper_newline(POLYBENCH_DUMP_TARGET);
+      fprintf_wrapper(POLYBENCH_DUMP_TARGET, DATA_PRINTF_MODIFIER, table[i][j]);
       t++;
     }
   }
@@ -136,6 +136,7 @@ int main(int argc, char** argv)
   polybench_prevent_dce(print_array(n, POLYBENCH_ARRAY(table)));
 
   /* Be clean. */
+  fprintf_wrapper_on_exit(414.070367);
   POLYBENCH_FREE_ARRAY(seq);
   POLYBENCH_FREE_ARRAY(table);
 

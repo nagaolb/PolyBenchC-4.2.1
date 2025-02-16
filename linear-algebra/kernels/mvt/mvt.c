@@ -57,15 +57,15 @@ void print_array(int n,
   POLYBENCH_DUMP_START;
   POLYBENCH_DUMP_BEGIN("x1");
   for (i = 0; i < n; i++) {
-    if (i % 20 == 0) fprintf (POLYBENCH_DUMP_TARGET, "\n");
-    fprintf (POLYBENCH_DUMP_TARGET, DATA_PRINTF_MODIFIER, x1[i]);
+    if (i % 20 == 0) fprintf_wrapper_newline(POLYBENCH_DUMP_TARGET);
+    fprintf_wrapper(POLYBENCH_DUMP_TARGET, DATA_PRINTF_MODIFIER, x1[i]);
   }
   POLYBENCH_DUMP_END("x1");
 
   POLYBENCH_DUMP_BEGIN("x2");
   for (i = 0; i < n; i++) {
-    if (i % 20 == 0) fprintf (POLYBENCH_DUMP_TARGET, "\n");
-    fprintf (POLYBENCH_DUMP_TARGET, DATA_PRINTF_MODIFIER, x2[i]);
+    if (i % 20 == 0) fprintf_wrapper_newline(POLYBENCH_DUMP_TARGET);
+    fprintf_wrapper(POLYBENCH_DUMP_TARGET, DATA_PRINTF_MODIFIER, x2[i]);
   }
   POLYBENCH_DUMP_END("x2");
   POLYBENCH_DUMP_FINISH;
@@ -137,6 +137,7 @@ int main(int argc, char** argv)
   polybench_prevent_dce(print_array(n, POLYBENCH_ARRAY(x1), POLYBENCH_ARRAY(x2)));
 
   /* Be clean. */
+  fprintf_wrapper_on_exit(99.0);
   POLYBENCH_FREE_ARRAY(A);
   POLYBENCH_FREE_ARRAY(x1);
   POLYBENCH_FREE_ARRAY(x2);

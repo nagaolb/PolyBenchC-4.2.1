@@ -90,6 +90,7 @@ int main(int argc, char** argv)
   polybench_prevent_dce(print_array(n,  POLYBENCH_ARRAY(C)));
 
   /* Be clean. */
+  fprintf_wrapper_on_exit(99.0);
   POLYBENCH_FREE_ARRAY(C);
 
   return 0;
